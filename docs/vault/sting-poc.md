@@ -83,4 +83,4 @@ this experiment.
 
 **Passed: APC pad changes Type in Sting.** With the APC and loopMIDI disabled for Live's own MIDI routing, the pad phase forwarded `90 53 7F` and `80 53 7F` from the third pad in the APC's top row to Sting via loopMIDI. The maintainer confirmed that Type moved from RANDOM to its third value.
 
-**LED return sent.** In a separate run, the probe converted Sting's RGB updates for Launchpad address 83 to alternating off and yellow commands `90 3A 00` and `90 3A 05` on the physical APC output. The visible LED response is pending confirmation.
+**Passed: Sting updates the physical APC LED.** In a separate run, the probe converted Sting's RGB updates for Launchpad address 83 to off and yellow commands `90 3A 00` and `90 3A 05` on the physical APC output. The maintainer saw the LED light and then turn off while changing Type. A follow-up run logged three yellow/off pairs. The maintainer confirmed that the pad consistently stayed off at xANDOM and lit at RxANDOM.
