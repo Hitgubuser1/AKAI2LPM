@@ -22,6 +22,8 @@ Publish under MIT and offer the finished application free of charge. Maintain pr
 
 ## Open choices
 
+Use loopMIDI for the initial Windows PoC. The desktop bridge should provision and manage its own virtual MIDI endpoint through an OS backend if Sting can discover and open that endpoint and exchange pad events and LED feedback reliably. In that case loopMIDI can be removed from the installation requirements.
+
 Python is proposed for the experiment. Choose the shipping language and virtual-port backend after observing traffic on Windows. A production endpoint needs independent send and receive paths. [Microsoft virtual device documentation](https://microsoft.github.io/MIDI/kb/virtual-device-app/)
 
 Fader assignments, multiple Sting instances and the order of platform and controller additions remain open.

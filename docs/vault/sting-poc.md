@@ -6,6 +6,8 @@ The maintainer saw Sting list a loopMIDI port named `LPMiniMK3 MIDI`. Deleting t
 
 ## Proposed Python experiment
 
+The initial Windows input test requires loopMIDI. Create a virtual port named `LPMiniMK3 MIDI` in loopMIDI and leave it running while testing Sting. For bidirectional acceptance, use an endpoint with independent send and receive paths.
+
 Use a disposable Live set and Sting's Algo main page. Disable Live's MIDI input/output for the controller ports, remove control-surface assignments for them and set monitoring on the Sting track to Off. Select the virtual port in Sting. For listening, route the musical output to a second instrument track. [Sting monitoring notes](https://www.if-tah.com/guides/sting-launchpad-mini-x-mk3.pdf)
 
 1. Capture controller-bound messages from before port selection through the first refresh. Record direction. If the cable echoes Sting's writes to its input, use a paired endpoint before interpreting results.
