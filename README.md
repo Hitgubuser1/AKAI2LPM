@@ -1,5 +1,7 @@
 # AKAI2LPM
 
+Created by **MixamSE**.
+
 AKAI2LPM aims to let musicians play Iftah’s Sting with an original Akai APC mini (MK1). The planned Windows MIDI bridge translates its pads and buttons into Launchpad Mini MK3 messages and sends Sting’s visual feedback back to the APC. The goal is to plug in the APC, select `LPMiniMK3 MIDI` in Sting and jam without learning individual controls.
 
 **Project status** — Design and protocol research. The maintainer has seen Sting list a virtual port with the expected name. Pad input and LED feedback still need a bench test. The first application release is planned as a free download.
