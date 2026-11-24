@@ -2,7 +2,7 @@
 
 ## Recorded observation
 
-The maintainer saw Sting list a loopMIDI port named `LPMiniMK3 MIDI`. Deleting the port and restarting Live removed the entry. Initialization, input handling and LED feedback still await verification.
+The maintainer saw Sting list a loopMIDI port named `LPMiniMK3 MIDI`. Deleting the port and restarting Live removed the entry. The first note-input test has since passed. See the Windows bench result below.
 
 ## Proposed Python experiment
 
@@ -42,10 +42,18 @@ timestamps, message bytes and the direction as seen by the probe.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Port discovery previously observed |
+| Windows | Ableton Live / VST3 | Port discovery and note input passed. LED return pending. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
 For each row record a visible Type change after a simulated pad press and an
 independent MIDI return after a mouse change. Record the exact setup with the
 trace. The unit tests use a simulated MIDI backend and run without Sting.
+
+## 2026-11-24 Windows bench result
+
+**Passed: simulated grid pad activates Sting.** Ableton Live 12 Suite on Windows hosted Sting VST3. Sting selected the loopMIDI port named LPMiniMK3 MIDI. The Python probe ran with Python 3.13.3 and Mido/RtMidi and opened the enumerated output LPMiniMK3 MIDI 1.
+
+The type-two gesture sent channel 1 note 82 with hex bytes 90 52 7F (press) and 80 52 00 (release). The maintainer observed Type move one step right from RANDOM to xANDOM. loopMIDI showed a cumulative count of 5,837 bytes. The counter measures aggregate traffic. The observed Type change is the evidence for the input path.
+
+Still to verify on Windows: CC input, independently captured Sting LED output, translation to the physical APC, and live response time.
