@@ -5,6 +5,7 @@ import time
 
 GESTURES = {
     "type-one": ([0x90, 81, 127], [0x80, 81, 0]),
+    "type-two": ([0x90, 82, 127], [0x80, 82, 0]),
     "generate": ([0xB0, 19, 127], [0xB0, 19, 0]),
 }
 
@@ -14,7 +15,7 @@ def event(direction, message):
             "bytes": list(message.bytes())}
 
 
-def run(midi, args, emit):
+def run(midi, args, emit, message_from_bytes=None):
     if args.action == "ports":
         emit({"inputs": midi.get_input_names(), "outputs": midi.get_output_names()})
         return
@@ -23,7 +24,7 @@ def run(midi, args, emit):
             time.sleep(args.seconds)
         return
     with midi.open_output(args.port) as output:
-        press, release = (midi.Message.from_bytes(data) for data in GESTURES[args.gesture])
+        press, release = (message_from_bytes(data) for data in GESTURES[args.gesture])
         output.send(press)
         try:
             emit(event("sent", press))
@@ -48,7 +49,7 @@ def main():
     try:
         import mido
         run(mido.Backend("mido.backends.rtmidi"), args,
-            lambda entry: print(json.dumps(entry), flush=True))
+            lambda entry: print(json.dumps(entry), flush=True), mido.Message.from_bytes)
     except (ImportError, OSError, RuntimeError) as error:
         parser.exit(1, f"MIDI probe: {error}\n")
 
