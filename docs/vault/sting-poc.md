@@ -42,7 +42,7 @@ timestamps, message bytes and the direction as seen by the probe.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Port discovery and note input passed. LED return pending. |
+| Windows | Ableton Live / VST3 | Port discovery, note input and read-only LED capture passed with loopMIDI. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -56,4 +56,6 @@ trace. The unit tests use a simulated MIDI backend and run without Sting.
 
 The type-two gesture sent channel 1 note 82 with hex bytes 90 52 7F (press) and 80 52 00 (release). The maintainer observed Type move one step right from RANDOM to xANDOM. loopMIDI showed a cumulative count of 5,837 bytes. The counter measures aggregate traffic. The observed Type change is the evidence for the input path.
 
-Still to verify on Windows: CC input, independently captured Sting LED output, translation to the physical APC, and live response time.
+**Passed: Sting emits RGB pad updates.** With no APC attached and no Python sender running, a read-only probe on `LPMiniMK3 MIDI 0` received Launchpad Mini MK3 SysEx frames starting with `F0 00 20 29 02 0D 03` and ending with `F7`. Two captured frames differed at pad address 83 (top row, third column). Its decimal RGB values changed from `90 80 0` to `0 0 0` and back on a subsequent frame. The packet format matches the [Novation programmer reference](https://downloads.novationmusic.com/novation/launchpad-mk3/launchpad-mini-mk3-0).
+
+Still to verify on Windows: CC input, simultaneous operation over an endpoint with independent directions, translation to the physical APC, and live response time.
