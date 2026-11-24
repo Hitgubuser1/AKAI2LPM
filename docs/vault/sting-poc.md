@@ -15,3 +15,35 @@ Use a disposable Live set and Sting's Algo main page. Disable Live's MIDI input/
 5. Once both directions work, repeat with the physical APC and observe its LEDs during a mouse change. Hold and release a momentary page button and check that Sting returns to the main page.
 
 Append Windows, Live and Sting versions, endpoint names, backend, device generation, raw bytes with direction, and observed UI or LED changes. Preserve startup traffic if initialization stalls.
+
+## Running the probe
+
+Use Python 3.12 from the repository root. Install the pinned dependencies in
+a virtual environment, then list the port names as the probe sees them.
+
+```text
+python -m pip install -r tools/requirements-poc.txt
+python tools/sting_probe.py ports
+python tools/sting_probe.py capture "<bridge-side input>" --seconds 60
+python tools/sting_probe.py send "<bridge-side output>" type-one
+python tools/sting_probe.py send "<bridge-side output>" generate
+```
+
+Start capture in its own terminal before selecting the device in Sting. Use
+the output of a paired endpoint to send into Sting and the input of that
+endpoint to receive Sting's replies. A shared loopMIDI port is useful for
+discovery and initial input probes. Use a separated return path for a
+definitive bidirectional result. The probe emits JSON Lines with monotonic
+timestamps, message bytes and the direction as seen by the probe.
+
+## Host acceptance
+
+| Platform | Host and format | Live evidence |
+| --- | --- | --- |
+| Windows | Ableton Live / VST3 | Port discovery previously observed |
+| macOS | Logic Pro / AU | Awaiting host run |
+| Linux | REAPER / CLAP | Awaiting host run |
+
+For each row record a visible Type change after a simulated pad press and an
+independent MIDI return after a mouse change. Record the exact setup with the
+trace. The unit tests use a simulated MIDI backend and run without Sting.
