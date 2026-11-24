@@ -58,7 +58,7 @@ The type-two gesture sent channel 1 note 82 with hex bytes 90 52 7F (press) and 
 
 **Passed: Sting emits RGB pad updates.** With no APC attached and no Python sender running, a read-only probe on `LPMiniMK3 MIDI 0` received Launchpad Mini MK3 SysEx frames starting with `F0 00 20 29 02 0D 03` and ending with `F7`. Two captured frames differed at pad address 83 (top row, third column). Its decimal RGB values changed from `90 80 0` to `0 0 0` and back on a subsequent frame. The packet format matches the [Novation programmer reference](https://downloads.novationmusic.com/novation/launchpad-mk3/launchpad-mini-mk3-0).
 
-Still to verify on Windows: CC input, simultaneous operation over an endpoint with independent directions, translation to the physical APC, and live response time.
+Still to verify on Windows: CC input, simultaneous operation over an endpoint with independent directions, and live response time.
 
 **Passed: direct APC mini MK1 input and LED output.** On Windows 10 build 19045, Python/Mido with RtMidi opened both APC ports on the current USB-C adapter. Sending `90 00 01` to `APC MINI 1` lit the bottom-left grid pad green, as observed by the maintainer. Pressing and releasing it produced `90 00 7F` and `80 00 7F` respectively on `APC MINI 0`. After release the probe sent `90 00 00` and the maintainer saw the LED turn off. This exercise used the physical APC directly. The complete APC-to-Sting and Sting-to-APC translation remains to be tested.
 
@@ -78,3 +78,9 @@ python tools/apc_type_probe.py led "<loopMIDI input>" "<APC output>"
 Each phase listens for 60 seconds. The LED phase accepts the observed
 Launchpad RGB frames. Other pad positions and LED formats are outside
 this experiment.
+
+### 2026-11-24 physical Type pad results
+
+**Passed: APC pad changes Type in Sting.** With the APC and loopMIDI disabled for Live's own MIDI routing, the pad phase forwarded `90 53 7F` and `80 53 7F` from the third pad in the APC's top row to Sting via loopMIDI. The maintainer confirmed that Type moved from RANDOM to its third value.
+
+**LED return sent.** In a separate run, the probe converted Sting's RGB updates for Launchpad address 83 to alternating off and yellow commands `90 3A 00` and `90 3A 05` on the physical APC output. The visible LED response is pending confirmation.

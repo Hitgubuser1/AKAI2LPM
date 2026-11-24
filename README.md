@@ -12,7 +12,7 @@ Connect an Akai APC mini MK1, select `LPMiniMK3 MIDI` in Sting, and use the pads
 
 Live playability and low resource use are release requirements. Pad input and LED feedback should respond without perceptible delay, including during bursts of MIDI traffic. The app is designed for a small install, low background RAM and CPU use, and operation without a dedicated GPU.
 
-**Pre-release.** In Ableton Live on Windows, Sting responded to a simulated pad press over loopMIDI and sent RGB LED updates that the probe captured. A separate hardware test verified press, release and green LED feedback on the APC mini MK1's bottom-left pad. End-to-end translation is the next test. The application is planned as a free download.
+**Pre-release.** In Ableton Live on Windows, a physical APC mini MK1 pad changed Sting's Type setting over loopMIDI. The probe also translated Sting's RGB updates and sent off and yellow commands back to the same pad. Visual confirmation of the LED return is pending. The application is planned as a free download.
 
 ## Compatibility roadmap
 
