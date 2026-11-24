@@ -61,3 +61,20 @@ The type-two gesture sent channel 1 note 82 with hex bytes 90 52 7F (press) and 
 Still to verify on Windows: CC input, simultaneous operation over an endpoint with independent directions, translation to the physical APC, and live response time.
 
 **Passed: direct APC mini MK1 input and LED output.** On Windows 10 build 19045, Python/Mido with RtMidi opened both APC ports on the current USB-C adapter. Sending `90 00 01` to `APC MINI 1` lit the bottom-left grid pad green, as observed by the maintainer. Pressing and releasing it produced `90 00 7F` and `80 00 7F` respectively on `APC MINI 0`. After release the probe sent `90 00 00` and the maintainer saw the LED turn off. This exercise used the physical APC directly. The complete APC-to-Sting and Sting-to-APC translation remains to be tested.
+
+### Physical Type pad experiment
+
+Use the exact input and output names reported by the probe. With Sting set to
+RANDOM, run the pad phase and press and release the third pad from the left in
+the top grid row. Expect Type to move to its third value. After the process
+exits, run the LED phase and move Type between its second and third values
+with the mouse. Expect the same physical pad to switch off and yellow.
+
+```text
+python tools/apc_type_probe.py pad "<APC input>" "<loopMIDI output>"
+python tools/apc_type_probe.py led "<loopMIDI input>" "<APC output>"
+```
+
+Each phase listens for 60 seconds. The LED phase accepts the observed
+Launchpad RGB frames. Other pad positions and LED formats are outside
+this experiment.
