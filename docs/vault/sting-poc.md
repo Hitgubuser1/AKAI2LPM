@@ -317,3 +317,15 @@ grid contained the smiley frame before shutdown.
 The probe sent 38 APC key transitions to Sting, received 532 LED messages
 from Sting and sent 846 LED updates to the APC. It ended normally after
 300 seconds and the maintainer reported that the APC LEDs went dark.
+
+### 2026-11-25 OSC Step Edit LED timing
+
+With Steps set to eight on the same Windows bench, the maintainer reported
+that row 8 pad 3 stayed yellow while holding step 2. The targeted trace
+recorded OSC level 15 at 48.480 seconds and the next level change to 12 at
+58.452 seconds. The probe sent one yellow command for the first event and
+no further command for that pad during the 9.972-second interval. Earlier
+in the same session, that coordinate received alternating levels 0 and
+15. The trace does not associate those earlier changes with a specific
+gesture or view. The sustained Step Edit highlight needs no blink rate
+adjustment based on this run.
