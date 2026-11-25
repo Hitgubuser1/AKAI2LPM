@@ -26,7 +26,8 @@ def apc_key(data):
 def apc_led(x, y, level, minimum):
     colours = (YELLOW, GREEN, YELLOW, RED)
     colour = colours[y // 2]
-    if y >= SIZE - 2 and level == 15:
+    # The two rightmost pads in the lower rows are grid controls, not note keys.
+    if y >= SIZE - 2 and x < SIZE - 1 and level == 15:
         colour = YELLOW
     return NOTE_ON, (SIZE - 1 - y) * SIZE + x, colour if level >= minimum else OFF
 

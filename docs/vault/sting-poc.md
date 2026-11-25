@@ -288,3 +288,12 @@ levels to red, and zero to off. With `--trace` it retains the last 24
 changes in the lower two rows as raw OSC levels. Pad positions still follow
 the Monome coordinates. Compare the keyboard layout with the Launchpad
 before choosing a remapping for the bridge.
+
+In the follow-up with Steps set to eight, the maintainer held row 5 pad 2,
+selected a new note on the bottom row, released the pads and reopened the
+same step. The new note was highlighted again. This confirms that the
+step note persists through the OSC input and feedback path. The maintainer
+also observed row 7 pad 8 alternating between red and yellow. Limit yellow
+note highlighting to the first seven columns in the bottom two rows, so
+brightness changes on the rightmost grid controls keep the same colour.
+Check the result on the APC in the next host run.

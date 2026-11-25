@@ -46,7 +46,9 @@ class OscTests(unittest.TestCase):
         self.assertEqual(apc_led(2, 7, 7, 1), (144, 2, 3))
         self.assertEqual(apc_led(2, 7, 15, 1), (144, 2, 5))
         self.assertEqual(apc_led(2, 7, 0, 1), (144, 2, 0))
-        self.assertEqual(apc_led(7, 6, 15, 1), (144, 15, 5))
+        self.assertEqual(apc_led(7, 6, 7, 1), (144, 15, 3))
+        self.assertEqual(apc_led(7, 6, 15, 1), (144, 15, 3))
+        self.assertEqual(apc_led(7, 6, 0, 1), (144, 15, 0))
         self.assertEqual(apc_led(2, 2, 15, 1), (144, 42, 1))
 
 
