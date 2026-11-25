@@ -42,7 +42,7 @@ timestamps, message bytes and the direction as seen by the probe.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Port discovery, note input and read-only LED capture passed with loopMIDI. |
+| Windows | Ableton Live / VST3 | Port discovery, note input, LED capture and simultaneous forwarding for one physical pad passed with shared loopMIDI. Separated endpoint validation pending. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -84,3 +84,12 @@ this experiment.
 **Passed: APC pad changes Type in Sting.** With the APC and loopMIDI disabled for Live's own MIDI routing, the pad phase forwarded `90 53 7F` and `80 53 7F` from the third pad in the APC's top row to Sting via loopMIDI. The maintainer confirmed that Type moved from RANDOM to its third value.
 
 **Passed: Sting updates the physical APC LED.** In a separate run, the probe converted Sting's RGB updates for Launchpad address 83 to off and yellow commands `90 3A 00` and `90 3A 05` on the physical APC output. The maintainer saw the LED light and then turn off while changing Type. A follow-up run logged three yellow/off pairs. The maintainer confirmed that the pad consistently stayed off at xANDOM and lit at RxANDOM.
+
+### 2026-11-25 simultaneous Type pad result
+
+**Passed: one physical pad with both forwarding directions active.** An inline Python 3.13.3 probe reused the Type translator and opened both directions with Mido/RtMidi. The setup used an APC mini MK1, Windows 10 build 19045, Ableton Live 12.4.16, Sting VST3 and the shared `LPMiniMK3 MIDI` loopMIDI port. The Sting plug-in version was unrecorded.
+
+- APC → probe → Sting: pressing and releasing the third pad in the top row forwarded `90 53 7F` and `80 53 7F`. The maintainer saw Type select `RxANDOM` and the pad light up.
+- Sting → probe → APC: the trace recorded repeated LED commands `90 3A 05` (yellow) and `90 3A 00` (off). The maintainer confirmed that turning Type down with the mouse to `xANDOM` extinguished the pad. Above `RxANDOM`, the pad stayed lit until Type returned to `xANDOM`.
+
+The converter collapses every accepted nonblack RGB value to yellow. The trace recorded forwarded APC commands. Capture raw Sting updates for Launchpad address 83 across Type steps to distinguish an RGB change from an omitted or unchanged pad entry. The shared loopMIDI result covers this pad. Separated endpoint validation, other controls and physical latency measurement remain open.
