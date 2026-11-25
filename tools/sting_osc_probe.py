@@ -7,7 +7,7 @@ import json
 import selectors
 import socket
 from threading import Lock
-from time import monotonic
+from time import monotonic, monotonic_ns
 
 from .apc_mini import GREEN, NOTE_OFF, NOTE_ON, OFF, RED, YELLOW
 from .monome_osc import DISCOVERY_PORT, LOOPBACK, SIZE, Grid, decode, encode
@@ -47,6 +47,12 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
     counts = Counter()
     recent = deque(maxlen=48) if args.trace else None
     keyboard_frames = deque(maxlen=24) if args.trace else None
+    watch_events = deque(maxlen=1024)
+    watched = None
+    if args.watch_pad is not None:
+        row, column = args.watch_pad
+        watched = column - 1, row - 1
+    start_ns = monotonic_ns()
     last_levels = [[0] * SIZE for _ in range(SIZE)]
     levels = {}
     held = set()
@@ -103,6 +109,7 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                             sock = selected.fileobj
                             try:
                                 packet, source = sock.recvfrom(65535)
+                                received_at = monotonic_ns() if watched is not None else None
                                 messages = decode(packet)
                             except ConnectionResetError:
                                 continue
@@ -125,8 +132,12 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                                     counts["sting_led_messages"] += 1
                                 keyboard_changed = False
                                 for x, y, level in feedback:
-                                    if keyboard_frames is not None and y >= SIZE - 2 and last_levels[y][x] != level:
-                                        keyboard_changed = True
+                                    is_watched = watched is not None and watched == (x, y)
+                                    if last_levels[y][x] != level:
+                                        if keyboard_frames is not None and y >= SIZE - 2:
+                                            keyboard_changed = True
+                                        if is_watched:
+                                            watch_events.append((received_at - start_ns, "osc", level))
                                     last_levels[y][x] = level
                                     if apc is None:
                                         continue
@@ -135,6 +146,8 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                                     if levels.get(note, OFF) != colour:
                                         levels[note] = colour
                                         apc.send(message_from_bytes(data))
+                                        if is_watched:
+                                            watch_events.append((monotonic_ns() - start_ns, "midi", colour))
                                         counts["sting_to_apc_leds"] += 1
                                 if keyboard_changed:
                                     keyboard_frames.append(tuple(tuple(row) for row in last_levels[-2:]))
@@ -158,6 +171,8 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
     summary = {"state": "stopped", **counts}
     if recent is not None:
         summary.update(recent=list(recent), last_levels=last_levels, keyboard_frames=list(keyboard_frames))
+    if watched is not None:
+        summary.update(watch_pad=args.watch_pad, watch_events_ns=list(watch_events))
     emit(summary)
 
 
@@ -168,6 +183,8 @@ def main():
     parser.add_argument("--seconds", type=int, default=120, choices=range(1, 301), metavar="1–300")
     parser.add_argument("--min-level", type=int, default=1, choices=range(1, 16), metavar="1–15")
     parser.add_argument("--trace", action="store_true", help="Report recent OSC and raw LED levels on exit")
+    parser.add_argument("--watch-pad", nargs=2, type=int, choices=range(1, SIZE + 1), metavar=("ROW", "PAD"),
+                        help="Report timestamped OSC brightness and APC LED changes for one pad on exit")
     args = parser.parse_args()
     if bool(args.apc_input) != bool(args.apc_output):
         parser.error("specify both APC ports or neither")

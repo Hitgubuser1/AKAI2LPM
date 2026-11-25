@@ -73,7 +73,8 @@ class LoopbackTests(unittest.TestCase):
     def test_full_round_trip_with_fake_sting_and_apc(self):
         apc = FakeApc()
         events = Queue()
-        args = SimpleNamespace(apc_input="in", apc_output="out", seconds=1, min_level=1, trace=True)
+        args = SimpleNamespace(apc_input="in", apc_output="out", seconds=1, min_level=1,
+                               trace=True, watch_pad=(8, 3))
 
         def probe():
             try:
@@ -122,7 +123,7 @@ class LoopbackTests(unittest.TestCase):
             send(device_port, "/sting/grid/led/level/set", 1, 4, 15)
             send(device_port, "/sting/grid/led/level/set", 1, 4, 0)
             send(device_port, "/sting/grid/led/set", 0, 0, 1)
-            for value in (7, 15, 0):
+            for value in (7, 15, 15, 0):
                 send(device_port, "/sting/grid/led/level/set", 2, 7, value)
             expected_leds = ((144, 25, 5), (144, 25, 0), (144, 56, 5),
                              (144, 2, 3), (144, 2, 5), (144, 2, 0))
@@ -134,5 +135,11 @@ class LoopbackTests(unittest.TestCase):
             self.assertEqual(summary["apc_to_sting"], 3)
             self.assertEqual(summary["sting_to_apc_leds"], 6)
             self.assertEqual([frame[1][2] for frame in summary["keyboard_frames"]], [7, 15, 0])
+            self.assertEqual(summary["watch_pad"], (8, 3))
+            transitions = [(source, value) for _, source, value in summary["watch_events_ns"]]
+            self.assertEqual(transitions, [("osc", 7), ("midi", 3), ("osc", 15),
+                                           ("midi", 5), ("osc", 0), ("midi", 0)])
+            timestamps = [timestamp for timestamp, _, _ in summary["watch_events_ns"]]
+            self.assertEqual(timestamps, sorted(timestamps))
             self.assertEqual(apc.leds.get_nowait(), (144, 56, 0))
             self.assertEqual(receive(), ("/sting/grid/key", (1, 4, 0)))

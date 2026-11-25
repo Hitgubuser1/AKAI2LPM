@@ -227,6 +227,7 @@ LED traffic with Python's standard library alone.
 ```powershell
 python -B -m tools.sting_osc_probe --seconds 180 --trace
 python -B -m tools.sting_osc_probe "APC MINI 0" "APC MINI 1" --seconds 180 --trace
+python -B -m tools.sting_osc_probe "APC MINI 0" "APC MINI 1" --seconds 300 --watch-pad 8 3
 ```
 
 Use an empty or disposable Live set. Disable the APC input and output in
@@ -249,6 +250,14 @@ palette assigns the APC colours by pairs of rows. Start at `--min-level 1`
 to show all nonzero levels and use the raw OSC levels to choose a threshold
 if Sting sends a dim background. Use Sting's native Monome grid positions
 and page gestures for the OSC workflow.
+
+For a Step Edit blink check, set Steps to eight and open the main page.
+Hold row 5 pad 2, tap pad 3 of row 8, and keep holding the step for a few
+seconds before releasing. `--watch-pad ROW PAD` records changes in Sting's
+OSC brightness and the LED values sent to that APC pad with monotonic
+timestamps. Read the report on exit. MIDI send timestamps measure the
+software path up to the MIDI API call, while visual feedback is checked
+on the physical APC.
 
 Record the Sting build and the host/device observations. The automated UDP
 test verifies discovery, setup, overlapping key events and LED updates
