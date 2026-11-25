@@ -49,9 +49,11 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
     keyboard_frames = deque(maxlen=24) if args.trace else None
     watch_events = deque(maxlen=1024)
     watched = None
+    watched_note = None
     if args.watch_pad is not None:
         row, column = args.watch_pad
         watched = column - 1, row - 1
+        watched_note = (SIZE - row) * SIZE + column - 1
     start_ns = monotonic_ns()
     last_levels = [[0] * SIZE for _ in range(SIZE)]
     levels = {}
@@ -163,6 +165,8 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                     if colour:
                         try:
                             apc.send(message_from_bytes((NOTE_ON, note, OFF)))
+                            if note == watched_note:
+                                watch_events.append((monotonic_ns() - start_ns, "cleanup_midi", OFF))
                         except (OSError, RuntimeError) as error:
                             errors.append(error)
 

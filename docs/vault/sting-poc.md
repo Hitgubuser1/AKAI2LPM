@@ -339,3 +339,10 @@ reconnecting the APC cleared the LED. Windows then listed `APC MINI 0`
 for input and `APC MINI 1` for output. Recheck that pad and its neighbour
 with direct press/release LED feedback, then verify clearing on probe exit.
 The cause of the retained LED state on the first run is unconfirmed.
+
+In the direct comparison with Sting disconnected, APC pads 1,7 and 1,6
+each sent two complete press and release pairs. The maintainer confirmed
+that both lit yellow on press and went dark on release. For an OSC shutdown
+check run the probe with `--watch-pad 1 7`. Keep that pad lit until the end.
+The trace labels a successful MIDI API call to clear the pad on shutdown
+as `cleanup_midi`. Verify the physical LED goes out as well.
