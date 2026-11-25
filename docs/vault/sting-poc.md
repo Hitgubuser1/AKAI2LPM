@@ -67,7 +67,7 @@ events after shutdown.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Port discovery, note input, LED capture and simultaneous forwarding for one physical pad passed with shared loopMIDI. Separated endpoint validation pending. |
+| Windows | Ableton Live / VST3 | Type, Length, Step Edit feedback and Generate Pattern passed on the shared loopMIDI bench. Separated endpoint validation pending. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -163,12 +163,17 @@ The maintainer confirmed the fifth-row response and observed lit Keyboard pads i
 
 The repository probe opened both APC mini MK1 ports and both sides of the shared loopMIDI port with Mido/RtMidi on the same Windows, Live and Sting VST3 setup. The reference probe sent two Type gestures to `LPMiniMK3 MIDI 2`. The grid probe received two Sting RGB frames on `LPMiniMK3 MIDI 1` and sent 65 LED commands to `APC MINI 1` before shutdown. The run verifies software forwarding to the live APC output.
 
-### 2026-11-25 Generate Pattern CC trace
+### 2026-11-25 Generate Pattern and APC grid colours
 
 On the same Windows, Live and Sting VST3 setup, the grid probe read the
 physical APC mini MK1 via `APC MINI 0` and sent four identical pairs to
 `LPMiniMK3 MIDI 2`. Each pair was `B0 13 7F` on press and `B0 13 00` on
 release (channel 1, CC 19). During the same run the probe received 25
 Sting RGB frames on `LPMiniMK3 MIDI 1` and sent 480 LED updates to
-`APC MINI 1`. These counts are totals for the run. The visual pattern
-change and physical palette still await confirmation.
+`APC MINI 1`. These counts are totals for the run.
+
+The maintainer confirmed that the physical Stop All Clips button changed
+the note sequence in Sting. A photo taken after a mouse-driven Type
+update showed light yellow Type pads, green-to-turquoise Density pads and
+red Keyboard pads with a light yellow root note. The three regions were
+visually distinguishable on the APC mini MK1 in this bench palette.
