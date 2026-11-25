@@ -67,7 +67,7 @@ events after shutdown.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Step Edit feedback and Generate Pattern passed on the shared loopMIDI bench. Separated endpoint validation pending. |
+| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Generate Pattern and overlapping Step Edit gestures passed on the shared loopMIDI bench. Separated endpoint validation pending. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -191,3 +191,22 @@ The maintainer confirmed that Density changed to 4 and then 10 and that
 the green fill followed both values. Tapping the second and then the first
 pad of the bottom row changed Root and moved the yellow Keyboard
 highlight accordingly. The individual note names were unrecorded.
+
+### 2026-11-25 overlapping APC pad gestures
+
+On the same Windows, Live and Sting VST3 bench, the Mido/RtMidi grid probe
+forwarded four overlapping gestures from `APC MINI 0` to
+`LPMiniMK3 MIDI 2`. For each gesture it sent Note On for Launchpad
+address 42 (Length step 2), Note On and Note Off for a Keyboard address,
+and then Note Off for address 42. The Keyboard targets were 14, 13, 15
+and 13. All events retained channel 1 and velocity 127.
+
+The 397 RGB frames from Sting on `LPMiniMK3 MIDI 1` showed that in all
+four trials the second pad changed the selected step note and Step Edit
+stayed active after that pad was released. Only release of the Length pad
+restored the main layout. Length remained four and the main-page root
+highlight remained on address 11. Reopening Step Edit showed the previous
+trial's selected step note. The maintainer confirmed that changing the
+note using the bottom keyboard row while holding the Length pad worked
+and that the new selection persisted. The probe sent 268 LED commands to
+`APC MINI 1` during the run.
