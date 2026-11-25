@@ -38,6 +38,31 @@ discovery and initial input probes. Use a separated return path for a
 definitive bidirectional result. The probe emits JSON Lines with monotonic
 timestamps, message bytes and the direction as seen by the probe.
 
+### Running the full-grid APC probe
+
+From the repository root, run the bidirectional probe with the exact four
+names reported by the ports command. This example uses the last Windows
+bench enumeration.
+
+```text
+python -m tools.sting_grid_probe "APC MINI 0" "APC MINI 1" "LPMiniMK3 MIDI 1" "LPMiniMK3 MIDI 2" --seconds 120 --trace
+```
+
+The arguments are APC input, APC output, Sting feedback input and Sting
+control output. The probe forwards grid notes and maps the lower and right
+APC buttons to Launchpad CCs. Change a Sting setting after opening the ports
+to request a fresh LED frame. For the first CC test, tap the right-hand
+button beside the bottom grid row, directly above Shift. It should send
+CC 19 with values 127 then 0 and generate a pattern on Sting's main page.
+
+The bench palette uses yellow for Type and Length, green for Density and
+red for Keyboard. The root note and highlighted step have separate colours.
+Explicit black turns a pad off. The LED path handles the all-RGB SysEx
+frames observed on the bench. Other lighting modes and edge-button LEDs
+are pending live captures. The run releases held controls and clears its
+active LEDs on exit. The optional trace reports up to 128 translated input
+events after shutdown.
+
 ## Host acceptance
 
 | Platform | Host and format | Live evidence |
