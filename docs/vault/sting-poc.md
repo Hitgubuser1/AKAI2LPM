@@ -241,15 +241,14 @@ Sting track. Keep musical MIDI routed through Live.
 | Type and LED feedback | Press a Type pad on the APC to change Sting. Turn Type with the mouse and verify the corresponding LED changes, including its off state. |
 | Grid coverage | Check Density, 16 → 8 → 4 → 16 Steps and Root. Verify removed steps dim or go out according to Sting's OSC levels and check the result on the APC. |
 | Overlapping holds | Hold a step in the Length region, select a note in the keyboard region and release the note. Step Edit stays open until the Length pad is released. Reopen it and verify that the new note persists. |
-| Generate Pattern | Open Slots using the documented page pad and press Generate. Confirm the sequence changes. |
+| Generate Pattern | From the main page, tap row 8 pad 8 (PAGE) to open Slots. Tap row 8 pad 1 (GEN). Confirm the sequence changes. |
 
 Use the [Monome Grid 64 layout](https://www.if-tah.com/guides/sting-monome-64.pdf)
 for pad positions. The probe preserves physical grid positions. The first
 palette assigns the APC colours by pairs of rows. Start at `--min-level 1`
 to show all nonzero levels and use the raw OSC levels to choose a threshold
-if Sting sends a dim background. The APC has a limited palette, so visual
-parity and direct Launchpad shortcuts on the APC edge buttons require their
-own live checks and mapping work.
+if Sting sends a dim background. Use Sting's native Monome grid positions
+and page gestures for the OSC workflow.
 
 Record the Sting build and the host/device observations. The automated UDP
 test verifies discovery, setup, overlapping key events and LED updates
@@ -285,9 +284,8 @@ The Root control indicates the pattern root throughout the gesture.
 
 The probe now maps the brightest keyboard level to yellow, lower visible
 levels to red, and zero to off. With `--trace` it retains the last 24
-changes in the lower two rows as raw OSC levels. Pad positions still follow
-the Monome coordinates. Compare the keyboard layout with the Launchpad
-before choosing a remapping for the bridge.
+changes in the lower two rows as raw OSC levels. Pad positions follow the
+native Monome coordinates.
 
 In the follow-up with Steps set to eight, the maintainer held row 5 pad 2,
 selected a new note on the bottom row, released the pads and reopened the
@@ -297,3 +295,16 @@ also observed row 7 pad 8 alternating between red and yellow. Limit yellow
 note highlighting to the first seven columns in the bottom two rows, so
 brightness changes on the rightmost grid controls keep the same colour.
 Check the result on the APC in the next host run.
+
+### 2026-11-25 OSC Slots and Generate Pattern
+
+On the same Windows 10 bench and native Monome layout, the maintainer
+opened Slots with PAGE and confirmed repeated GEN presses produced new
+patterns. The trace recorded press and release pairs at `(7, 7)` for PAGE
+and `(0, 7)` for GEN on Slots, using OSC coordinates from the top left.
+The maintainer also saw Sting's smiley rendered on the APC. The final raw
+grid contained the smiley frame before shutdown.
+
+The probe sent 38 APC key transitions to Sting, received 532 LED messages
+from Sting and sent 846 LED updates to the APC. It ended normally after
+300 seconds and the maintainer reported that the APC LEDs went dark.
