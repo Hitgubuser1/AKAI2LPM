@@ -1,17 +1,32 @@
 # AKAI2LPM
 
-Created by **MixamSE**.
+**A MIDI bridge project for playing Iftah's Sting with pad controllers.**
 
-AKAI2LPM aims to let musicians play Iftah’s Sting with an original Akai APC mini (MK1). The planned Windows MIDI bridge translates its pads and buttons into Launchpad Mini MK3 messages and sends Sting’s visual feedback back to the APC. The goal is to plug in the APC, select `LPMiniMK3 MIDI` in Sting and jam without learning individual controls.
+Created by **MixamSE** · [MIT License](LICENSE)
 
-**Project status** — Design and protocol research. The maintainer has seen Sting list a virtual port with the expected name. Pad input and LED feedback still need a bench test. The first application release is planned as a free download.
+## How it will work
 
-The first target is one APC mini MK1 and one Sting instance in Ableton Live on Windows. The nine faders and support for other controllers, including the APC mini MK2 and APC40, are ideas for later versions.
+Connect an Akai APC mini MK1, select `LPMiniMK3 MIDI` in Sting, and use the pads to generate patterns or change length, type and root note. The bridge translates pad and button events into Launchpad Mini MK3 messages and converts Sting's LED feedback into colours and states the controller can display.
+
+## Project status
+
+Live playability and low resource use are release requirements. Pad input and LED feedback should respond without perceptible delay, including during bursts of MIDI traffic. The app is designed for a small install, low background RAM and CPU use, and operation without a dedicated GPU.
+
+**Pre-release.** On the Windows bench with Ableton Live and loopMIDI, the APC mini MK1 changed Type and Length and triggered Generate Pattern from a physical button. LED feedback cleared inactive Length pads and returned to the main layout after releasing a Step Edit hold. The [full-grid Python probe](docs/vault/sting-poc.md#running-the-full-grid-apc-probe) supports further hardware testing. The application is planned as a free download.
+
+## Compatibility roadmap
+
+| Area | First validation target | Longer-term direction |
+| --- | --- | --- |
+| Operating system | Windows | macOS and Linux, following Sting's desktop availability |
+| Plug-in and host | Sting VST3 in Ableton Live | Validate Sting's VST3, AU and CLAP builds in compatible hosts |
+| Pad controller | Akai APC mini MK1 | Selectable controller profiles, with the APC mini MK2 and APC40 as candidates |
+
+Iftah already lists downloads for Windows, macOS and Linux and publishes Sting in VST3, AU and CLAP formats. Bridge compatibility will be verified for each combination of host, Sting build and MIDI backend that the project supports. [Official Sting downloads and system requirements](https://www.if-tah.com/devices/sting/)
 
 ## Development
 
-Start with the [development vault](docs/vault/README.md) for design decisions, controller mappings and the proposed Python experiment. Contributors can find the Git workflow there. Repository-specific instructions for coding agents live in [AGENTS.md](AGENTS.md).
-
-## License
-
-AKAI2LPM is distributed under the [MIT License](LICENSE).
+- [Development vault](docs/vault/README.md) for design decisions and the Git workflow
+- [Controller protocol](docs/vault/protocol.md) for MIDI mapping and LED feedback
+- [Proof of concept](docs/vault/sting-poc.md) for the proposed Python experiment and bench results
+- [AGENTS.md](AGENTS.md) for repository instructions
