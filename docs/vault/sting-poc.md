@@ -346,3 +346,10 @@ that both lit yellow on press and went dark on release. For an OSC shutdown
 check run the probe with `--watch-pad 1 7`. Keep that pad lit until the end.
 The trace labels a successful MIDI API call to clear the pad on shutdown
 as `cleanup_midi`. Verify the physical LED goes out as well.
+
+The follow-up OSC run confirmed the shutdown behaviour. The maintainer
+verified pad 1,7 was lit during the run and dark after the normal
+120-second exit. The final OSC level for the pad was 7. The trace shows
+the probe sent MIDI velocity 0 for that pad during cleanup and the send
+returned successfully. The run processed 253 OSC LED messages and sent
+417 APC updates before cleanup. The original retained LED did not recur.
