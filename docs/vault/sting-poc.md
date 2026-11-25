@@ -92,4 +92,10 @@ this experiment.
 - APC → probe → Sting: pressing and releasing the third pad in the top row forwarded `90 53 7F` and `80 53 7F`. The maintainer saw Type select `RxANDOM` and the pad light up.
 - Sting → probe → APC: the trace recorded repeated LED commands `90 3A 05` (yellow) and `90 3A 00` (off). The maintainer confirmed that turning Type down with the mouse to `xANDOM` extinguished the pad. Above `RxANDOM`, the pad stayed lit until Type returned to `xANDOM`.
 
-The converter collapses every accepted nonblack RGB value to yellow. The trace recorded forwarded APC commands. Capture raw Sting updates for Launchpad address 83 across Type steps to distinguish an RGB change from an omitted or unchanged pad entry. The shared loopMIDI result covers this pad. Separated endpoint validation, other controls and physical latency measurement remain open.
+The converter collapses every accepted nonblack RGB value to yellow. The trace recorded forwarded APC commands. See the raw capture below for the source of the Type behaviour. Separated endpoint validation, other controls and physical latency measurement remain open.
+
+### 2026-11-25 Type LED capture
+
+**Observed: the Type row fills from the left through the selected value.** On the same Windows and Live setup, a read-only Mido/RtMidi listener on `LPMiniMK3 MIDI 1` captured Sting's controller output while the maintainer moved Type with the mouse from `RANDOM` up to position 5 and back. The updated top rows had `2 → 3 → 4 → 5 → 4 → 3 → 2 → 1` lit pads. The eight updates were 328-byte Launchpad Mini MK3 lighting SysEx frames, each with an RGB entry for every one of the 64 grid pads. The lit Type pads shared RGB `(90, 80, 0)` and the remaining Type pads carried `(0, 0, 0)`.
+
+The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through 5 and `03 53 00 00 00` at positions 2 and 1. The third APC pad staying lit above `RxANDOM` matches the fill sent by Sting. Verify Density, Keyboard and Length clears with their own controls and captures.
