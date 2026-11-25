@@ -255,3 +255,18 @@ Record the Sting build and the host/device observations. The automated UDP
 test verifies discovery, setup, overlapping key events and LED updates
 with a simulated host and controller. Real Sting connection, APC playability
 and timing need live validation.
+
+### 2026-11-25 Windows OSC discovery, Type and Length
+
+With loopMIDI closed on the Windows 10 bench, Sting VST3 1.0.5 in Live
+12.4.16 connected to the probe's `monome 64`. The maintainer saw the grid
+light up on connection. APC pads changed Type in Sting, and mouse changes
+to Type updated the corresponding APC LEDs. The maintainer also confirmed
+that the Length control worked. The same run ended after 300 seconds, and
+the maintainer observed the APC LEDs go dark as the probe shut down.
+
+The probe reported two discovery replies and eight device configuration
+messages. It sent 51 APC key transitions to Sting, processed 1,136 LED
+messages from Sting and sent 554 LED updates to the APC. The final captured
+grid used OSC levels 0, 7 and 15. Step Edit with a second held gesture and
+Generate Pattern from the Monome Slots page still need host confirmation.
