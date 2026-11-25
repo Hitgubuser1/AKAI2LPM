@@ -17,18 +17,3 @@ The bottom-left pad maps from note 0 to 11. The top-left maps from 56 to 81. Pre
 Novation supports palette events, flashing, pulsing and grouped SysEx updates. Capture the forms Sting actually sends. APC grid velocities are 0 for off, 1/2 for steady/blinking green, 3/4 for red and 5/6 for yellow. The edge buttons each have one colour. Check slot occupancy, playback position and selected values for readability on hardware. [Novation programmer reference](https://downloads.novationmusic.com/novation/launchpad-mk3/launchpad-mini-mk3-0) and [independent APC mini MK1 implementation](https://github.com/gastonmorixe/lib-midi-akai-apc-mini)
 
 The APC profile should give Type, Density and Keyboard distinct colours. Choose the palette so that adjacent regions serving different functions use different colours when colours are reused elsewhere. Preserve explicit LED-off states and verify that shortening Length turns off the steps removed from the pattern. Preserve the left-to-right Type fill observed in the [Type LED capture](sting-poc.md#2026-11-25-type-led-capture).
-
-## APC keyboard layout
-
-Count rows from the top and columns from the left for the physical layout
-below. Preserve the piano shape on the main and Step Edit pages.
-
-| APC row | Pad 1 | Pad 2 | Pad 3 | Pad 4 | Pad 5 | Pad 6 | Pad 7 | Pad 8 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 7 | Off | C♯ | D♯ | Off | F♯ | G♯ | A♯ | Off |
-| 8 | C | D | E | F | G | A | B | Off |
-
-Display ordinary note pads in red and the selected note in yellow. Keep
-the gaps between the two groups of black keys dark. Map any controls
-sharing those rows in Sting's native layout to APC edge buttons so the
-keys keep their piano shape. Validate native coordinates before remapping.
