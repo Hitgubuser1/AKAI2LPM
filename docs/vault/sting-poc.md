@@ -210,3 +210,48 @@ trial's selected step note. The maintainer confirmed that changing the
 note using the bottom keyboard row while holding the Length pad worked
 and that the new selection persisted. The probe sent 268 LED commands to
 `APC MINI 1` during the run.
+
+## Local OSC bench with Sting's Monome mode
+
+The Windows target is Sting VST3 1.0.5 in Ableton Live 12.4.16 with the APC
+mini MK1. Use the built-in USB MIDI stack for the physical APC. The probe
+advertises a `monome 64` over serialosc discovery on `127.0.0.1:12002` and
+uses a second loopback UDP socket for key events and grid LEDs. Keep the
+loopMIDI tray app closed. The probe opens only the two physical APC ports
+and uses Python sockets to talk to Sting. [Monome OSC reference](https://monome.org/docs/serialosc/osc/)
+
+From the repository root, use the existing [PoC MIDI dependencies](../../tools/requirements-poc.txt)
+for the APC run. Omit both port arguments to check discovery and incoming
+LED traffic with Python's standard library alone.
+
+```powershell
+python -B -m tools.sting_osc_probe --seconds 180 --trace
+python -B -m tools.sting_osc_probe "APC MINI 0" "APC MINI 1" --seconds 180 --trace
+```
+
+Use an empty or disposable Live set. Disable the APC input and output in
+Live's MIDI settings and clear its control-surface assignment. Start the
+probe, then open Sting's control-surface selector, choose the discovered
+Monome grid and use its default rotation. Set monitoring to Off on the
+Sting track. Keep musical MIDI routed through Live.
+
+| Check | Expected observation |
+| --- | --- |
+| Discovery | Sting lists and opens the grid. The probe records a discovery reply and device configuration. |
+| Type and LED feedback | Press a Type pad on the APC to change Sting. Turn Type with the mouse and verify the corresponding LED changes, including its off state. |
+| Grid coverage | Check Density, 16 → 8 → 4 → 16 Steps and Root. Verify removed steps dim or go out according to Sting's OSC levels and check the result on the APC. |
+| Overlapping holds | Hold a step in the Length region, select a note in the keyboard region and release the note. Step Edit stays open until the Length pad is released. Reopen it and verify that the new note persists. |
+| Generate Pattern | Open Slots using the documented page pad and press Generate. Confirm the sequence changes. |
+
+Use the [Monome Grid 64 layout](https://www.if-tah.com/guides/sting-monome-64.pdf)
+for pad positions. The probe preserves physical grid positions. The first
+palette assigns the APC colours by pairs of rows. Start at `--min-level 1`
+to show all nonzero levels and use the raw OSC levels to choose a threshold
+if Sting sends a dim background. The APC has a limited palette, so visual
+parity and direct Launchpad shortcuts on the APC edge buttons require their
+own live checks and mapping work.
+
+Record the Sting build and the host/device observations. The automated UDP
+test verifies discovery, setup, overlapping key events and LED updates
+with a simulated host and controller. Real Sting connection, APC playability
+and timing need live validation.
