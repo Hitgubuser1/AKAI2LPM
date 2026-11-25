@@ -104,7 +104,7 @@ The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through
 
 **Passed: Length input and LED clears.** With Sting VST3 in Ableton Live 12.4.16 on Windows 10 build 19045, the Python 3.13.3 Mido/RtMidi probe sent short channel-1 note gestures on `LPMiniMK3 MIDI 2` and captured replies on `LPMiniMK3 MIDI 1`. The probe simulated `16 → 8 → 4 → 16` with 80 ms presses on Launchpad notes 38, 48, 44 and 38 and paused five seconds at each value. The maintainer confirmed the same sequence in Sting's Steps display. The first 16 produced no LED frame. The shared port echoed the eight outgoing note messages.
 
-Each of the three changes produced a complete launchpad grid frame with 64 RGB entries. The Length pads use addresses 41–48 for steps 1–8 and 31–38 for steps 9–16, matching the [Launchpad layout](https://www.if-tah.com/guides/sting-launchpad-mini-x-mk3.pdf).
+Each of the three changes produced a complete Launchpad grid frame with 64 RGB entries. The Length pads use addresses 41–48 for steps 1–8 and 31–38 for steps 9–16, matching the [Launchpad layout](https://www.if-tah.com/guides/sting-launchpad-mini-x-mk3.pdf).
 
 | Steps | Active addresses | Explicit black `(0, 0, 0)` |
 | --- | --- | --- |
@@ -112,4 +112,10 @@ Each of the three changes produced a complete launchpad grid frame with 64 RGB e
 | 4 | 41–44 | 45–48 and 31–38 |
 | 16 | 41–48 and 31–38 | None |
 
-Active steps used RGB `(70, 70, 70)`. Address 41 was highlighted in `(110, 0, 55)` in all three frames. Physical APC Length LED output remains to be verified.
+Active steps used RGB `(70, 70, 70)`. Address 41 was highlighted in `(110, 0, 55)` in all three frames.
+
+### 2026-11-25 Length feedback on APC mini MK1
+
+**Passed: physical Length LEDs turn off and relight.** On the same Windows, Live and Sting VST3 setup, an inline Python 3.13.3 Mido/RtMidi probe simulated Launchpad presses over shared loopMIDI. It read the resulting Sting RGB frames on `LPMiniMK3 MIDI 1` and sent LED messages to `APC MINI 1`. Launchpad addresses 41–48 mapped to APC notes 24–31 in the fifth grid row from the top. Addresses 31–38 mapped to APC notes 16–23 in the sixth grid row. For this bench test all active LEDs used steady green (`90 <note> 01`), and black mapped to off (`90 <note> 00`).
+
+After an initial move to 8, the trace confirmed five RGB frames and 48 APC LED commands across setup and the `16 → 8 → 4 → 16` sweep. The move to 8 sent off to notes 16–23. The move to 4 additionally sent off to notes 28–31. The final move to 16 relit those twelve pads. The maintainer confirmed the expected on and off states on the physical controller. The probe cleared its LEDs on exit.
