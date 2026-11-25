@@ -119,3 +119,17 @@ Active steps used RGB `(70, 70, 70)`. Address 41 was highlighted in `(110, 0, 55
 **Passed: physical Length LEDs turn off and relight.** On the same Windows, Live and Sting VST3 setup, an inline Python 3.13.3 Mido/RtMidi probe simulated Launchpad presses over shared loopMIDI. It read the resulting Sting RGB frames on `LPMiniMK3 MIDI 1` and sent LED messages to `APC MINI 1`. Launchpad addresses 41–48 mapped to APC notes 24–31 in the fifth grid row from the top. Addresses 31–38 mapped to APC notes 16–23 in the sixth grid row. For this bench test all active LEDs used steady green (`90 <note> 01`), and black mapped to off (`90 <note> 00`).
 
 After an initial move to 8, the trace confirmed five RGB frames and 48 APC LED commands across setup and the `16 → 8 → 4 → 16` sweep. The move to 8 sent off to notes 16–23. The move to 4 additionally sent off to notes 28–31. The final move to 16 relit those twelve pads. The maintainer confirmed the expected on and off states on the physical controller. The probe cleared its LEDs on exit.
+
+### 2026-11-25 APC Length taps and Step Edit hold
+
+On the same Windows, Live and Sting VST3 setup, a Python 3.13.3 Mido/RtMidi bench probe read `APC MINI 0`, forwarded channel-1 note presses and releases through `LPMiniMK3 MIDI 2`, and translated Sting's RGB replies from `LPMiniMK3 MIDI 1` to green or off on `APC MINI 1`. All three gestures used the fifth grid row from the top.
+
+| Gesture | APC → Launchpad note | Sting RGB response |
+| --- | --- | --- |
+| Tap the rightmost pad | 31 → 48 | Eight Length pads active |
+| Tap the fourth pad | 27 → 44 | Four Length pads active |
+| Hold the second pad for 2.177 s | 25 → 42 | Step Edit frame while held. Release restored the exact preceding frame with four Length pads active. |
+
+The Step Edit frame first appeared about 0.5 s after the hold began. Sting sent 46 identical Step Edit frames during that hold and 33 during a second hold of 1.696 s. Each hold sent 15 changed APC LEDs on entry and 15 on return. Repeated frames yielded zero additional APC writes. Both releases restored the exact preceding frame with four active Length pads.
+
+The maintainer confirmed the fifth-row response and observed lit Keyboard pads in the bottom two rows. Those rows kept the same on/off states during Step Edit, but the incoming RGB values changed. The test palette renders all active pads green, so these colour changes are visible in the capture only.
