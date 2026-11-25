@@ -67,7 +67,7 @@ events after shutdown.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Type, Length, Step Edit feedback and Generate Pattern passed on the shared loopMIDI bench. Separated endpoint validation pending. |
+| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Step Edit feedback and Generate Pattern passed on the shared loopMIDI bench. Separated endpoint validation pending. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -123,7 +123,7 @@ The converter collapses every accepted nonblack RGB value to yellow. The trace r
 
 **Observed: the Type row fills from the left through the selected value.** On the same Windows and Live setup, a read-only Mido/RtMidi listener on `LPMiniMK3 MIDI 1` captured Sting's controller output while the maintainer moved Type with the mouse from `RANDOM` up to position 5 and back. The updated top rows had `2 → 3 → 4 → 5 → 4 → 3 → 2 → 1` lit pads. The eight updates were 328-byte Launchpad Mini MK3 lighting SysEx frames, each with an RGB entry for every one of the 64 grid pads. The lit Type pads shared RGB `(90, 80, 0)` and the remaining Type pads carried `(0, 0, 0)`.
 
-The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through 5 and `03 53 00 00 00` at positions 2 and 1. The third APC pad staying lit above `RxANDOM` matches the fill sent by Sting. Verify Density and Keyboard with their own controls and captures.
+The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through 5 and `03 53 00 00 00` at positions 2 and 1. The third APC pad staying lit above `RxANDOM` matches the fill sent by Sting.
 
 ### 2026-11-25 Length test via simulated Launchpad pads
 
@@ -177,3 +177,17 @@ the note sequence in Sting. A photo taken after a mouse-driven Type
 update showed light yellow Type pads, green-to-turquoise Density pads and
 red Keyboard pads with a light yellow root note. The three regions were
 visually distinguishable on the APC mini MK1 in this bench palette.
+
+### 2026-11-25 Density and Root via physical APC pads
+
+On the same Windows, Live and Sting VST3 setup, the Mido/RtMidi
+grid probe translated four APC mini MK1 pad taps from `APC MINI 0`
+to Launchpad notes 64, 52, 12 and 11 on `LPMiniMK3 MIDI 2`.
+Each tap forwarded a channel-1 Note On and Note Off with velocity 127.
+The probe received four Sting RGB frames on `LPMiniMK3 MIDI 1` and
+sent 74 LED messages to `APC MINI 1` across the run.
+
+The maintainer confirmed that Density changed to 4 and then 10 and that
+the green fill followed both values. Tapping the second and then the first
+pad of the bottom row changed Root and moved the yellow Keyboard
+highlight accordingly. The individual note names were unrecorded.
