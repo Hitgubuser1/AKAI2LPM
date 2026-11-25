@@ -25,7 +25,10 @@ def apc_key(data):
 
 def apc_led(x, y, level, minimum):
     colours = (YELLOW, GREEN, YELLOW, RED)
-    return NOTE_ON, (SIZE - 1 - y) * SIZE + x, colours[y // 2] if level >= minimum else OFF
+    colour = colours[y // 2]
+    if y >= SIZE - 2 and level == 15:
+        colour = YELLOW
+    return NOTE_ON, (SIZE - 1 - y) * SIZE + x, colour if level >= minimum else OFF
 
 
 def bind_udp(stack, port):
@@ -42,6 +45,7 @@ def bind_udp(stack, port):
 def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY_PORT):
     counts = Counter()
     recent = deque(maxlen=48) if args.trace else None
+    keyboard_frames = deque(maxlen=24) if args.trace else None
     last_levels = [[0] * SIZE for _ in range(SIZE)]
     levels = {}
     held = set()
@@ -118,7 +122,10 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                                     feedback = grid.feedback(address, values)
                                 if feedback:
                                     counts["sting_led_messages"] += 1
+                                keyboard_changed = False
                                 for x, y, level in feedback:
+                                    if keyboard_frames is not None and y >= SIZE - 2 and last_levels[y][x] != level:
+                                        keyboard_changed = True
                                     last_levels[y][x] = level
                                     if apc is None:
                                         continue
@@ -128,6 +135,8 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
                                         levels[note] = colour
                                         apc.send(message_from_bytes(data))
                                         counts["sting_to_apc_leds"] += 1
+                                if keyboard_changed:
+                                    keyboard_frames.append(tuple(tuple(row) for row in last_levels[-2:]))
             except KeyboardInterrupt:
                 pass
             finally:
@@ -147,7 +156,7 @@ def run(args, emit, midi=None, message_from_bytes=None, discovery_port=DISCOVERY
         raise RuntimeError(str(errors[0])) from errors[0]
     summary = {"state": "stopped", **counts}
     if recent is not None:
-        summary.update(recent=list(recent), last_levels=last_levels)
+        summary.update(recent=list(recent), last_levels=last_levels, keyboard_frames=list(keyboard_frames))
     emit(summary)
 
 

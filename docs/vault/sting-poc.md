@@ -270,3 +270,21 @@ messages. It sent 51 APC key transitions to Sting, processed 1,136 LED
 messages from Sting and sent 554 LED updates to the APC. The final captured
 grid used OSC levels 0, 7 and 15. Step Edit with a second held gesture and
 Generate Pattern from the Monome Slots page still need host confirmation.
+
+### 2026-11-25 OSC keyboard feedback during Step Edit
+
+On the same bench, the probe sent 32 key transitions, including complete
+press and release pairs for bottom-row pads while row 5 pad 2 was held.
+It received 979 LED messages from Sting and sent 475 updates to the APC.
+The maintainer saw the keyboard pads in red and could not verify which
+step note was selected. The probe rendered every nonzero keyboard level in
+red. The final frame showed only one active Length step. Test again with
+Steps set to eight before holding step 2. Inspect the step note in Sting's
+expanded note editor or reopen Step Edit and compare the pad highlight.
+The Root control indicates the pattern root throughout the gesture.
+
+The probe now maps the brightest keyboard level to yellow, lower visible
+levels to red, and zero to off. With `--trace` it retains the last 24
+changes in the lower two rows as raw OSC levels. Pad positions still follow
+the Monome coordinates. Compare the keyboard layout with the Launchpad
+before choosing a remapping for the bridge.

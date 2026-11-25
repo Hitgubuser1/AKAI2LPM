@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import unittest
 
 from tools.monome_osc import DEVICE_ID, LOOPBACK, Grid, decode, encode
-from tools.sting_osc_probe import apc_key, run
+from tools.sting_osc_probe import apc_key, apc_led, run
 
 
 class OscTests(unittest.TestCase):
@@ -41,6 +41,13 @@ class OscTests(unittest.TestCase):
         self.assertEqual(apc_key((128, 7, 127)), (7, 7, False))
         self.assertEqual(apc_key((144, 0, 0)), (0, 7, False))
         self.assertIsNone(apc_key((144, 89, 127)))
+
+    def test_keyboard_distinguishes_normal_highlighted_and_off(self):
+        self.assertEqual(apc_led(2, 7, 7, 1), (144, 2, 3))
+        self.assertEqual(apc_led(2, 7, 15, 1), (144, 2, 5))
+        self.assertEqual(apc_led(2, 7, 0, 1), (144, 2, 0))
+        self.assertEqual(apc_led(7, 6, 15, 1), (144, 15, 5))
+        self.assertEqual(apc_led(2, 2, 15, 1), (144, 42, 1))
 
 
 class FakeApc:
@@ -113,12 +120,17 @@ class LoopbackTests(unittest.TestCase):
             send(device_port, "/sting/grid/led/level/set", 1, 4, 15)
             send(device_port, "/sting/grid/led/level/set", 1, 4, 0)
             send(device_port, "/sting/grid/led/set", 0, 0, 1)
-            for expected in ((144, 25, 5), (144, 25, 0), (144, 56, 5)):
+            for value in (7, 15, 0):
+                send(device_port, "/sting/grid/led/level/set", 2, 7, value)
+            expected_leds = ((144, 25, 5), (144, 25, 0), (144, 56, 5),
+                             (144, 2, 3), (144, 2, 5), (144, 2, 0))
+            for expected in expected_leds:
                 self.assertEqual(apc.leds.get(timeout=1), expected)
 
             summary = events.get(timeout=2)
             self.assertEqual(summary.get("state"), "stopped", summary)
             self.assertEqual(summary["apc_to_sting"], 3)
-            self.assertEqual(summary["sting_to_apc_leds"], 3)
+            self.assertEqual(summary["sting_to_apc_leds"], 6)
+            self.assertEqual([frame[1][2] for frame in summary["keyboard_frames"]], [7, 15, 0])
             self.assertEqual(apc.leds.get_nowait(), (144, 56, 0))
             self.assertEqual(receive(), ("/sting/grid/key", (1, 4, 0)))
