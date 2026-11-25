@@ -98,4 +98,18 @@ The converter collapses every accepted nonblack RGB value to yellow. The trace r
 
 **Observed: the Type row fills from the left through the selected value.** On the same Windows and Live setup, a read-only Mido/RtMidi listener on `LPMiniMK3 MIDI 1` captured Sting's controller output while the maintainer moved Type with the mouse from `RANDOM` up to position 5 and back. The updated top rows had `2 → 3 → 4 → 5 → 4 → 3 → 2 → 1` lit pads. The eight updates were 328-byte Launchpad Mini MK3 lighting SysEx frames, each with an RGB entry for every one of the 64 grid pads. The lit Type pads shared RGB `(90, 80, 0)` and the remaining Type pads carried `(0, 0, 0)`.
 
-The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through 5 and `03 53 00 00 00` at positions 2 and 1. The third APC pad staying lit above `RxANDOM` matches the fill sent by Sting. Verify Density, Keyboard and Length clears with their own controls and captures.
+The third pad (address 83) received `03 53 5A 50 00` at Type positions 3 through 5 and `03 53 00 00 00` at positions 2 and 1. The third APC pad staying lit above `RxANDOM` matches the fill sent by Sting. Verify Density and Keyboard with their own controls and captures.
+
+### 2026-11-25 Length test via simulated Launchpad pads
+
+**Passed: Length input and LED clears.** With Sting VST3 in Ableton Live 12.4.16 on Windows 10 build 19045, the Python 3.13.3 Mido/RtMidi probe sent short channel-1 note gestures on `LPMiniMK3 MIDI 2` and captured replies on `LPMiniMK3 MIDI 1`. The probe simulated `16 → 8 → 4 → 16` with 80 ms presses on Launchpad notes 38, 48, 44 and 38 and paused five seconds at each value. The maintainer confirmed the same sequence in Sting's Steps display. The first 16 produced no LED frame. The shared port echoed the eight outgoing note messages.
+
+Each of the three changes produced a complete launchpad grid frame with 64 RGB entries. The Length pads use addresses 41–48 for steps 1–8 and 31–38 for steps 9–16, matching the [Launchpad layout](https://www.if-tah.com/guides/sting-launchpad-mini-x-mk3.pdf).
+
+| Steps | Active addresses | Explicit black `(0, 0, 0)` |
+| --- | --- | --- |
+| 8 | 41–48 | 31–38 |
+| 4 | 41–44 | 45–48 and 31–38 |
+| 16 | 41–48 and 31–38 | None |
+
+Active steps used RGB `(70, 70, 70)`. Address 41 was highlighted in `(110, 0, 55)` in all three frames. Physical APC Length LED output remains to be verified.
