@@ -158,3 +158,7 @@ On the same Windows, Live and Sting VST3 setup, a Python 3.13.3 Mido/RtMidi benc
 The Step Edit frame first appeared about 0.5 s after the hold began. Sting sent 46 identical Step Edit frames during that hold and 33 during a second hold of 1.696 s. Each hold sent 15 changed APC LEDs on entry and 15 on return. Repeated frames yielded zero additional APC writes. Both releases restored the exact preceding frame with four active Length pads.
 
 The maintainer confirmed the fifth-row response and observed lit Keyboard pads in the bottom two rows. Those rows kept the same on/off states during Step Edit, but the incoming RGB values changed. The test palette renders all active pads green, so these colour changes are visible in the capture only.
+
+### 2026-11-25 full-grid probe smoke test
+
+The repository probe opened both APC mini MK1 ports and both sides of the shared loopMIDI port with Mido/RtMidi on the same Windows, Live and Sting VST3 setup. The reference probe sent two Type gestures to `LPMiniMK3 MIDI 2`. The grid probe received two Sting RGB frames on `LPMiniMK3 MIDI 1` and sent 65 LED commands to `APC MINI 1` before shutdown. The run verifies software forwarding to the live APC output. The physical Generate Pattern button and the appearance of the bench colours await observation.
