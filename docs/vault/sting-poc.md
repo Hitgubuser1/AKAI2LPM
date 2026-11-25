@@ -329,3 +329,13 @@ in the same session, that coordinate received alternating levels 0 and
 15. The trace does not associate those earlier changes with a specific
 gesture or view. The sustained Step Edit highlight needs no blink rate
 adjustment based on this run.
+
+After the run, the maintainer reported that row 1 pad 7 remained yellow.
+The final OSC frame put that pad at level 7, which the probe rendered
+yellow. The probe had exited and the LED remained on after disconnecting
+Sting. A direct MIDI Note On with velocity 0 for APC note 62 completed
+without an API error, but the maintainer saw no change. Unplugging and
+reconnecting the APC cleared the LED. Windows then listed `APC MINI 0`
+for input and `APC MINI 1` for output. Recheck that pad and its neighbour
+with direct press/release LED feedback, then verify clearing on probe exit.
+The cause of the retained LED state on the first run is unconfirmed.
