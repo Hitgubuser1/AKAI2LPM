@@ -67,7 +67,7 @@ events after shutdown.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Generate Pattern and overlapping Step Edit gestures passed on the shared loopMIDI bench. Separated endpoint validation pending. |
+| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Generate Pattern and overlapping Step Edit gestures passed on the shared loopMIDI bench and the local OSC bench. Reconnecting manually after a probe restart restored input and LEDs over OSC. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -210,3 +210,173 @@ trial's selected step note. The maintainer confirmed that changing the
 note using the bottom keyboard row while holding the Length pad worked
 and that the new selection persisted. The probe sent 268 LED commands to
 `APC MINI 1` during the run.
+
+## Local OSC bench with Sting's Monome mode
+
+The Windows target is Sting VST3 1.0.5 in Ableton Live 12.4.16 with the APC
+mini MK1. Use the built-in USB MIDI stack for the physical APC. The probe
+advertises a `monome 64` over serialosc discovery on `127.0.0.1:12002` and
+uses a second loopback UDP socket for key events and grid LEDs. Keep the
+loopMIDI tray app closed. The probe opens only the two physical APC ports
+and uses Python sockets to talk to Sting. [Monome OSC reference](https://monome.org/docs/serialosc/osc/)
+
+From the repository root, use the existing [PoC MIDI dependencies](../../tools/requirements-poc.txt)
+for the APC run. Omit both port arguments to check discovery and incoming
+LED traffic with Python's standard library alone.
+
+```powershell
+python -B -m tools.sting_osc_probe --seconds 180 --trace
+python -B -m tools.sting_osc_probe "APC MINI 0" "APC MINI 1" --seconds 180 --trace
+python -B -m tools.sting_osc_probe "APC MINI 0" "APC MINI 1" --seconds 300 --watch-pad 8 3
+```
+
+Use an empty or disposable Live set. Disable the APC input and output in
+Live's MIDI settings and clear its control-surface assignment. Start the
+probe, then open Sting's control-surface selector, choose the discovered
+Monome grid and use its default rotation. Set monitoring to Off on the
+Sting track. Keep musical MIDI routed through Live.
+
+| Check | Expected observation |
+| --- | --- |
+| Discovery | Sting lists and opens the grid. The probe records a discovery reply and device configuration. |
+| Type and LED feedback | Press a Type pad on the APC to change Sting. Turn Type with the mouse and verify the corresponding LED changes, including its off state. |
+| Density and Root | From the main page at 0° rotation, tap row 3 pad 2 and pad 6 for Density. Tap row 8 pad 2 and pad 3 for Root with all other pads released. Check the parameter value and LEDs for each. |
+| Length | Check 16 → 8 → 4 → 16 Steps. Verify removed steps dim or go out according to Sting's OSC levels and check the result on the APC. |
+| Overlapping holds | Hold a step in the Length region, select a note in the keyboard region and release the note. Step Edit stays open until the Length pad is released. Reopen it and verify that the new note persists. |
+| Generate Pattern | From the main page, tap row 8 pad 8 (PAGE) to open Slots. Tap row 8 pad 1 (GEN). Confirm the sequence changes. |
+| Reconnect | Restart the probe with the host open. Observe whether the grid works before using Connect. If needed, toggle the Monome connection, then check that Density and LED feedback resume. |
+
+Use the [Monome Grid 64 layout](https://www.if-tah.com/guides/sting-monome-64.pdf)
+for pad positions. The probe preserves physical grid positions. The first
+palette assigns the APC colours by pairs of rows. Start at `--min-level 1`
+to show all nonzero levels and use the raw OSC levels to choose a threshold
+if Sting sends a dim background. Use Sting's native Monome grid positions
+and page gestures for the OSC workflow.
+
+For a Step Edit blink check, set Steps to eight and open the main page.
+Hold row 5 pad 2, tap pad 3 of row 8, and keep holding the step for a few
+seconds before releasing. `--watch-pad ROW PAD` records changes in Sting's
+OSC brightness and the LED values sent to that APC pad with monotonic
+timestamps. Read the report on exit. MIDI send timestamps measure the
+software path up to the MIDI API call, while visual feedback is checked
+on the physical APC.
+
+Record the Sting build and the host/device observations. The automated UDP
+test verifies discovery, setup, overlapping key events and LED updates
+with a simulated host and controller. Real Sting connection, APC playability
+and timing need live validation.
+
+### 2026-11-25 Windows OSC discovery, Type and Length
+
+With loopMIDI closed on the Windows 10 bench, Sting VST3 1.0.5 in Live
+12.4.16 connected to the probe's `monome 64`. The maintainer saw the grid
+light up on connection. APC pads changed Type in Sting, and mouse changes
+to Type updated the corresponding APC LEDs. The maintainer also confirmed
+that the Length control worked. The same run ended after 300 seconds, and
+the maintainer observed the APC LEDs go dark as the probe shut down.
+
+The probe reported two discovery replies and eight device configuration
+messages. It sent 51 APC key transitions to Sting, processed 1,136 LED
+messages from Sting and sent 554 LED updates to the APC. The final captured
+grid used OSC levels 0, 7 and 15. Step Edit with a second held gesture and
+Generate Pattern from the Monome Slots page still need host confirmation.
+
+### 2026-11-25 OSC keyboard feedback during Step Edit
+
+On the same bench, the probe sent 32 key transitions, including complete
+press and release pairs for bottom-row pads while row 5 pad 2 was held.
+It received 979 LED messages from Sting and sent 475 updates to the APC.
+The maintainer saw the keyboard pads in red and could not verify which
+step note was selected. The probe rendered every nonzero keyboard level in
+red. The final frame showed only one active Length step. Test again with
+Steps set to eight before holding step 2. Inspect the step note in Sting's
+expanded note editor or reopen Step Edit and compare the pad highlight.
+The Root control indicates the pattern root throughout the gesture.
+
+The probe now maps the brightest keyboard level to yellow, lower visible
+levels to red, and zero to off. With `--trace` it retains the last 24
+changes in the lower two rows as raw OSC levels. Pad positions follow the
+native Monome coordinates.
+
+In the follow-up with Steps set to eight, the maintainer held row 5 pad 2,
+selected a new note on the bottom row, released the pads and reopened the
+same step. The new note was highlighted again. This confirms that the
+step note persists through the OSC input and feedback path. The maintainer
+also observed row 7 pad 8 alternating between red and yellow. Limit yellow
+note highlighting to the first seven columns in the bottom two rows, so
+brightness changes on the rightmost grid controls keep the same colour.
+Check the result on the APC in the next host run.
+
+### 2026-11-25 OSC Slots and Generate Pattern
+
+On the same Windows 10 bench and native Monome layout, the maintainer
+opened Slots with PAGE and confirmed repeated GEN presses produced new
+patterns. The trace recorded press and release pairs at `(7, 7)` for PAGE
+and `(0, 7)` for GEN on Slots, using OSC coordinates from the top left.
+The maintainer also saw Sting's smiley rendered on the APC. The final raw
+grid contained the smiley frame before shutdown.
+
+The probe sent 38 APC key transitions to Sting, received 532 LED messages
+from Sting and sent 846 LED updates to the APC. It ended normally after
+300 seconds and the maintainer reported that the APC LEDs went dark.
+
+### 2026-11-25 OSC Step Edit LED timing
+
+With Steps set to eight on the same Windows bench, the maintainer reported
+that row 8 pad 3 stayed yellow while holding step 2. The targeted trace
+recorded OSC level 15 at 48.480 seconds and the next level change to 12 at
+58.452 seconds. The probe sent one yellow command for the first event and
+no further command for that pad during the 9.972-second interval. Earlier
+in the same session, that coordinate received alternating levels 0 and
+15. The trace does not associate those earlier changes with a specific
+gesture or view. The sustained Step Edit highlight needs no blink rate
+adjustment based on this run.
+
+After the run, the maintainer reported that row 1 pad 7 remained yellow.
+The final OSC frame put that pad at level 7, which the probe rendered
+yellow. The probe had exited and the LED remained on after disconnecting
+Sting. A direct MIDI Note On with velocity 0 for APC note 62 completed
+without an API error, but the maintainer saw no change. Unplugging and
+reconnecting the APC cleared the LED. Windows then listed `APC MINI 0`
+for input and `APC MINI 1` for output. Recheck that pad and its neighbour
+with direct press/release LED feedback, then verify clearing on probe exit.
+The cause of the retained LED state on the first run is unconfirmed.
+
+In the direct comparison with Sting disconnected, APC pads 1,7 and 1,6
+each sent two complete press and release pairs. The maintainer confirmed
+that both lit yellow on press and went dark on release. For an OSC shutdown
+check run the probe with `--watch-pad 1 7`. Keep that pad lit until the end.
+The trace labels a successful MIDI API call to clear the pad on shutdown
+as `cleanup_midi`. Verify the physical LED goes out as well.
+
+The follow-up OSC run confirmed the shutdown behaviour. The maintainer
+verified pad 1,7 was lit during the run and dark after the normal
+120-second exit. The final OSC level for the pad was 7. The trace shows
+the probe sent MIDI velocity 0 for that pad during cleanup and the send
+returned successfully. The run processed 253 OSC LED messages and sent
+417 APC updates before cleanup. The original retained LED did not recur.
+
+### 2026-11-25 OSC Density and Root
+
+On the same Windows 10 bench, the maintainer initially reported that row 3
+changed Steps and row 8 changed Type. The probe sent the matching physical
+OSC coordinates, which pointed to a rotated grid in Sting. After correcting
+Grid Rotation, the maintainer confirmed Density and its LEDs responded to
+row 3 pads 2 and 6, and Root and its highlight responded to row 8 pads 2 and
+3. The successful run sent 12 key transitions, received 284 OSC LED
+messages and sent 160 APC LED updates.
+
+### 2026-11-26 OSC reconnect after probe restart
+
+On Windows 10 22H2 (build 19045) with Sting VST3 1.0.5, Ableton Live 12.4.16
+and the APC mini MK1, the local UDP probe was restarted while Live and
+Sting stayed open. The first process used device port 59787 and the second
+used 49738. The grid stayed dark after restart while Sting still displayed
+the Monome device as connected. The maintainer toggled the connection in
+Sting, saw the LEDs return and successfully changed Density again.
+
+The second process recorded five discovery replies, 24 configuration
+messages and eight key transitions for the Density pads. It received 134
+LED messages from Sting and sent 298 LED updates to the APC before cleanup.
+At normal exit all LEDs went dark. Manual reconnect worked in this setup.
+Automatic recovery from the stale connection remains open for the bridge.
