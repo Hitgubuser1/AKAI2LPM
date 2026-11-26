@@ -14,27 +14,26 @@ Measure added bridge latency separately in each direction using monotonic timest
 
 ## 2026-11-24 - First release
 
-Use a software bridge on Windows between one original APC mini and one Sting instance in Ableton Live. This preserves Sting's page logic and lets the APC use its existing firmware. In Launchpad mode, present the port name `LPMiniMK3 MIDI` to Sting and map the upper Launchpad row to the lower APC row. In either workflow, preserve grid orientation and keep playing steps and active slots distinguishable.
+Use a software bridge on Windows between one original APC mini and one Sting instance in Ableton Live. The APC uses its existing firmware and the Windows USB MIDI stack. The bridge uses local OSC to reach Sting's Monome control surface. Keep physical pad orientation, playing steps and active slots distinguishable in both workflows.
 
 ## 2026-11-24 - Distribution
 
 Publish under MIT and offer the finished application free of charge. Maintain project knowledge alongside the implementation so reviews can track both together.
 
-## 2026-11-25 - Selectable Sting workflows
+## 2026-11-26 - Selectable controller workflows over OSC
 
-Let users choose between Sting's native Launchpad and Monome workflows in
-the bridge. The layouts, page controls and LED feedback differ. Keep the
-Sting workflow choice independent of the physical controller profile.
-Offer native Monome over local OSC as the path demonstrated on Windows 10
-with the built-in USB MIDI stack for the APC. Offer native Launchpad over
-MIDI when a compatible, distributable virtual endpoint is available and
-has been validated with Sting on that platform.
+Offer two controller workflows in the bridge. Both use the same local
+OSC transport, and Sting stays set to Monome in either case. The Monome
+workflow uses native Grid 64 positions and gestures. The Launchpad Mini
+workflow translates APC pad positions, gestures and LED feedback to the
+familiar Launchpad Mini MK3 layout where Sting's Monome surface supports
+the actions. Implement the Launchpad Mini workflow first. Keep workflow
+translation independent of the physical controller profile and the OSC
+session. Record any gaps against the earlier Launchpad MIDI bench.
 
 ## Open choices
 
-Use loopMIDI for the initial Windows PoC. The desktop bridge should provision and manage its own virtual MIDI endpoint through an OS backend if Sting can discover and open that endpoint and exchange pad events and LED feedback reliably. In that case loopMIDI can be removed from the installation requirements.
-
-Python is proposed for the experiment. Choose the shipping language and virtual-port backend after observing traffic on Windows. A production endpoint needs independent send and receive paths. [Microsoft virtual device documentation](https://microsoft.github.io/MIDI/kb/virtual-device-app/)
+The initial Launchpad MIDI proof of concept used loopMIDI for the Windows test. Use the Python OSC bench for the shared release transport. Choose the shipping language and toolkit after comparing live latency, resource use and packaging on the target platforms.
 
 Fader assignments, multiple Sting instances and the order of platform and controller additions remain open.
 

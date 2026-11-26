@@ -67,7 +67,7 @@ events after shutdown.
 
 | Platform | Host and format | Live evidence |
 | --- | --- | --- |
-| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Generate Pattern and overlapping Step Edit gestures passed on the shared loopMIDI bench. Separated endpoint validation pending. |
+| Windows | Ableton Live / VST3 | Type, Density, Length, Root, Generate Pattern and overlapping Step Edit gestures passed on the shared loopMIDI bench and the local OSC bench. Reconnecting manually after a probe restart restored input and LEDs over OSC. |
 | macOS | Logic Pro / AU | Awaiting host run |
 | Linux | REAPER / CLAP | Awaiting host run |
 
@@ -240,9 +240,11 @@ Sting track. Keep musical MIDI routed through Live.
 | --- | --- |
 | Discovery | Sting lists and opens the grid. The probe records a discovery reply and device configuration. |
 | Type and LED feedback | Press a Type pad on the APC to change Sting. Turn Type with the mouse and verify the corresponding LED changes, including its off state. |
-| Grid coverage | Check Density, 16 → 8 → 4 → 16 Steps and Root. Verify removed steps dim or go out according to Sting's OSC levels and check the result on the APC. |
+| Density and Root | From the main page at 0° rotation, tap row 3 pad 2 and pad 6 for Density. Tap row 8 pad 2 and pad 3 for Root with all other pads released. Check the parameter value and LEDs for each. |
+| Length | Check 16 → 8 → 4 → 16 Steps. Verify removed steps dim or go out according to Sting's OSC levels and check the result on the APC. |
 | Overlapping holds | Hold a step in the Length region, select a note in the keyboard region and release the note. Step Edit stays open until the Length pad is released. Reopen it and verify that the new note persists. |
 | Generate Pattern | From the main page, tap row 8 pad 8 (PAGE) to open Slots. Tap row 8 pad 1 (GEN). Confirm the sequence changes. |
+| Reconnect | Restart the probe with the host open. Observe whether the grid works before using Connect. If needed, toggle the Monome connection, then check that Density and LED feedback resume. |
 
 Use the [Monome Grid 64 layout](https://www.if-tah.com/guides/sting-monome-64.pdf)
 for pad positions. The probe preserves physical grid positions. The first
@@ -353,3 +355,28 @@ verified pad 1,7 was lit during the run and dark after the normal
 the probe sent MIDI velocity 0 for that pad during cleanup and the send
 returned successfully. The run processed 253 OSC LED messages and sent
 417 APC updates before cleanup. The original retained LED did not recur.
+
+### 2026-11-25 OSC Density and Root
+
+On the same Windows 10 bench, the maintainer initially reported that row 3
+changed Steps and row 8 changed Type. The probe sent the matching physical
+OSC coordinates, which pointed to a rotated grid in Sting. After correcting
+Grid Rotation, the maintainer confirmed Density and its LEDs responded to
+row 3 pads 2 and 6, and Root and its highlight responded to row 8 pads 2 and
+3. The successful run sent 12 key transitions, received 284 OSC LED
+messages and sent 160 APC LED updates.
+
+### 2026-11-26 OSC reconnect after probe restart
+
+On Windows 10 22H2 (build 19045) with Sting VST3 1.0.5, Ableton Live 12.4.16
+and the APC mini MK1, the local UDP probe was restarted while Live and
+Sting stayed open. The first process used device port 59787 and the second
+used 49738. The grid stayed dark after restart while Sting still displayed
+the Monome device as connected. The maintainer toggled the connection in
+Sting, saw the LEDs return and successfully changed Density again.
+
+The second process recorded five discovery replies, 24 configuration
+messages and eight key transitions for the Density pads. It received 134
+LED messages from Sting and sent 298 LED updates to the APC before cleanup.
+At normal exit all LEDs went dark. Manual reconnect worked in this setup.
+Automatic recovery from the stale connection remains open for the bridge.
